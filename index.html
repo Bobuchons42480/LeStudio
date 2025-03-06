@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Réservation de chambre</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            width: 300px;
+            margin: auto;
+        }
+
+        input, button {
+            margin: 5px 0;
+            padding: 8px;
+        }
+
+        button {
+            background-color: blue;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Réservez votre chambre</h1>
+    <form id="reservationForm">
+        <label for="name">Nom :</label>
+        <input type="text" id="name" required>
+        
+        <label for="start_date">Date d'arrivée :</label>
+        <input type="date" id="start_date" required>
+        
+        <label for="end_date">Date de départ :</label>
+        <input type="date" id="end_date" required>
+        
+        <label for="email">Email :</label>
+        <input type="email" id="email" required>
+        
+        <button type="submit">Réserver</button>
+    </form>
+    <p id="confirmationMessage"></p>
+
+    <script>
+        document.getElementById("reservationForm").addEventListener("submit", async function(event) {
+            event.preventDefault();
+
+            let name = document.getElementById("name").value;
+            let startDate = document.getElementById("start_date").value;
+            let endDate = document.getElementById("end_date").value;
+            let email = document.getElementById("email").value;
+
+            let reservationData = { name, startDate, endDate, email };
+
+            try {
+                let response = await fetch("http://localhost:3000/send-email", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(reservationData)
+                });
+
+                let result = await response.json();
+                document.getElementById("confirmationMessage").innerText = result.message;
+            } catch (error) {
+                console.error("Erreur :", error);
+                document.getElementById("confirmationMessage").innerText = "Erreur lors de l'envoi de l'e-mail.";
+            }
+        });
+    </script>
+</body>
+</html>
